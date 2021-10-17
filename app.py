@@ -20,7 +20,7 @@ class Recommender:
 
     def parsing_args(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('userId', required=False,
+        self.parser.add_argument('id', required=False,
                                  type=int,
                                  help="userId")
 
