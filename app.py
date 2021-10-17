@@ -1,4 +1,5 @@
 import pickle
+import json
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
@@ -35,9 +36,7 @@ class Recommender:
 
     def get_user_recommend(self, title, user):
         if title in self.dataset.values:
-            output = {
-                'hybrid': self.hybrid.hybrid(user, title)
-            }
+            output =  self.hybrid.hybrid(user, title)
         else:
             output = None
         return output
@@ -63,7 +62,7 @@ class UserBase(Resource):
         args = recommeder.parser.parse_args()
         userId = args['id']
         output = recommeder.get_user_recommend(int(userId), title)
-        return output
+        return json.loads(output.to_json())
 
 
 api.add_resource(MovieBase, '/movies/<string:title>')

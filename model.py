@@ -42,7 +42,7 @@ class Hybrid(object):
         movies['est'] = movies['id'].apply(lambda x: self.svd.predict(user, self.indices_map.loc[x]['movieId']).est)
         movies = movies.sort_values('est', ascending=False)
         del movies['est']
-        return movies.head(20).to_json(orient = 'table')
+        return movies.head(20)
 
     def content_predict(self, title):
         return self.contentbase.predict(title)
