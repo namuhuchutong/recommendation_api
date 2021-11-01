@@ -28,15 +28,16 @@ class Recommender:
     def get_content_recommend(self, title):
         if title in self.dataset.values:
             output = {
-                    'content': list(self.content.predict(title))
-                }
+                'content': list(self.content.predict(title))
+            }
         else:
             output = None
         return output
 
     def get_user_recommend(self, title, user):
         if title in self.dataset.values:
-            output =  self.hybrid.hybrid(user, title)
+            output = self.hybrid.hybrid(user, title)
+            print(output)
         else:
             output = None
         return output
@@ -61,8 +62,8 @@ class UserBase(Resource):
     def get(self, title):
         args = recommeder.parser.parse_args()
         userId = args['id']
-        output = recommeder.get_user_recommend(int(userId), title)
-        return json.loads(output.to_json())
+        output = recommeder.get_user_recommend(title, int(userId))
+        return json.loads(output.to_json(orient = 'records'))
 
 
 api.add_resource(MovieBase, '/movies/<string:title>')
