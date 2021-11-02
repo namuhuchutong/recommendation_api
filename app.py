@@ -71,6 +71,9 @@ class UserBase(Resource):
 
 class UserInfo(Resource):
 
+    def __init__(self):
+        self.movieTitles = []
+
     def ratingsUser(self, userId):
         ratings = pd.read_csv('dataset/ratings_small.csv')
         user = ratings[ratings['userId'] == userId]
@@ -78,12 +81,15 @@ class UserInfo(Resource):
         if len(user) != 0:
             user['movieId'] = user['movieId'].apply(lambda x: self.tmdbToimdb(str(x)))
             user = user[user['movieId'] != 'N/A']
+            user['title'] = self.movieTitles
             print(user)
+            print(self.movieTitles)
             return user
         else:
             return None
 
     def tmdbToimdb(self, tmdbId):
+        self.movieTitle = []
         apiUrl = 'https://api.themoviedb.org/3/movie/'
         apiKey = 'a0735a2be9600e8356b5d672781cb382'
         URL = apiUrl + tmdbId + '?api_key=' + apiKey
@@ -91,6 +97,7 @@ class UserInfo(Resource):
 
         if res.status_code == 200:
             output = res.json()
+            self.movieTitles.append(output['title'])
             output = output['imdb_id']
             return output
         else:
