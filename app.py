@@ -1,10 +1,13 @@
 import pickle
 import json
-from flask import Flask, request
+
+import pandas as pd
+from flask import Flask
 from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 from model import ContentsBased, Hybrid
 
+import requests
 
 class Recommender:
 
@@ -66,8 +69,44 @@ class UserBase(Resource):
         return json.loads(output.to_json(orient = 'records'))
 
 
+class UserInfo(Resource):
+
+    def ratingsUser(self, userId):
+        ratings = pd.read_csv('dataset/ratings_small.csv')
+        user = ratings[ratings['userId'] == userId]
+
+        if len(user) != 0:
+            user['movieId'] = user['movieId'].apply(lambda x: self.tmdbToimdb(str(x)))
+            user = user[user['movieId'] != 'N/A']
+            print(user)
+            return user
+        else:
+            return None
+
+    def tmdbToimdb(self, tmdbId):
+        apiUrl = 'https://api.themoviedb.org/3/movie/'
+        apiKey = 'a0735a2be9600e8356b5d672781cb382'
+        URL = apiUrl + tmdbId + '?api_key=' + apiKey
+        res = requests.get(URL)
+
+        if res.status_code == 200:
+            output = res.json()
+            output = output['imdb_id']
+            return output
+        else:
+            return 'N/A'
+
+
+    def get(self):
+        args = recommeder.parser.parse_args()
+        userId = args['id']
+        output = self.ratingsUser(userId)
+        return json.loads(output.to_json(orient = 'records'))
+
+
 api.add_resource(MovieBase, '/movies/<string:title>')
 api.add_resource(UserBase, '/userId/<string:title>')
+api.add_resource(UserInfo, '/userInfo')
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

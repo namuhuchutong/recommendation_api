@@ -38,10 +38,9 @@ class Hybrid(object):
         sim_scores = self.contentbase.calc_sim(title)
         movie_indices = [i[0] for i in sim_scores]
 
-        movies = self.smd.iloc[movie_indices][['title', 'id']]
+        movies = self.smd.iloc[movie_indices][['title', 'id', 'genres']]
         movies['est'] = movies['id'].apply(lambda x: self.svd.predict(user, self.indices_map.loc[x]['movieId']).est)
         movies = movies.sort_values('est', ascending=False)
-        del movies['est']
         return movies.head(20)
 
     def content_predict(self, title):
