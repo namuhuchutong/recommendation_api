@@ -103,7 +103,6 @@ class UserInfo(Resource):
         else:
             return 'N/A'
 
-
     def get(self):
         args = recommeder.parser.parse_args()
         userId = args['id']
@@ -111,9 +110,9 @@ class UserInfo(Resource):
         return json.loads(output.to_json(orient = 'records'))
 
 
-api.add_resource(MovieBase, '/movies/<string:title>')
-api.add_resource(UserBase, '/userId/<string:title>')
-api.add_resource(UserInfo, '/userInfo')
+api.add_resource(MovieBase, '/api/movies/<string:title>')
+api.add_resource(UserBase, '/api/userId/<string:title>')
+api.add_resource(UserInfo, '/api/userInfo')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=False)
